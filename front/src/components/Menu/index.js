@@ -1,21 +1,23 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  CssBaseline,
+  IconButton,
+  Badge,
+} from "@material-ui/core";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import StoreIcon from "@material-ui/icons/Store";
 import { Link } from "react-router-dom";
 
-import { selectBooks } from "features/books/booksSlice";
+import { selectBooksBasketValue } from "features/books/booksSlice";
 
 import { useStyles } from "./styles";
 
 const Menu = ({ title }) => {
-  const books = useSelector(selectBooks);
+  const basketValue = useSelector(selectBooksBasketValue);
   const classes = useStyles();
 
   return (
@@ -28,18 +30,18 @@ const Menu = ({ title }) => {
           </Typography>
           <div className={classes.grow} />
           <div>
-            <IconButton aria-label="shop" color="inherit">
-              <Link to="/" style={{ color: "white" }}>
+            <Link to="/" style={{ color: "white" }}>
+              <IconButton aria-label="shop" color="inherit">
                 <StoreIcon />
-              </Link>
-            </IconButton>
-            <IconButton aria-label="basket" color="inherit">
-              <Badge badgeContent={books.basketValue} color="secondary">
-                <Link to="/basketPage" style={{ color: "white" }}>
+              </IconButton>
+            </Link>
+            <Link to="/basketPage" style={{ color: "white" }}>
+              <IconButton aria-label="basket" color="inherit">
+                <Badge badgeContent={basketValue} color="secondary">
                   <ShoppingBasketIcon />
-                </Link>
-              </Badge>
-            </IconButton>
+                </Badge>
+              </IconButton>
+            </Link>
           </div>
         </Toolbar>
       </AppBar>

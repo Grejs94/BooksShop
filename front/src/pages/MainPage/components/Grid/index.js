@@ -1,33 +1,36 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
+import { Grid, CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 
-import { selectBooks, addItemToBasket } from "features/books/booksSlice";
-import { checkSingleStatus } from "utils/checkSingleStatus";
+import {
+  addItemToBasket,
+  selectBooksFetchStatus,
+  selectBooksData,
+} from "features/books/booksSlice";
 
 import { Card } from "./components";
 import { useStyles } from "./styles";
 
 export default function SpacingGrid() {
   const dispatch = useDispatch();
-  const books = useSelector(selectBooks);
+  const status = useSelector(selectBooksFetchStatus);
   const classes = useStyles();
 
-  const data = checkSingleStatus(books.dataStatus);
+  const data = useSelector(selectBooksData);
 
   const handleclick = (item) => {
     dispatch(addItemToBasket(item));
   };
 
-  if (data.isError) {
+  if (status === "failed") {
     return "Fetching data error...";
   }
 
-  if (data.isLoading) {
-    return "";
+  if (status === "inProgress") {
+    return <CircularProgress />;
   }
 
-  if (!data.isLoaded) {
+  if (!data) {
     return null;
   }
 
@@ -35,15 +38,9 @@ export default function SpacingGrid() {
     <Grid container className={classes.root} spacing={2}>
       <Grid item xs={12}>
         <Grid container justify="center" spacing={2}>
-          {books.data.map((item) => (
-            <Grid key={item.id} item>
-              <Card
-                picture={item.cover_url}
-                title={item.title}
-                author={item.author}
-                pages={item.pages}
-                handleClick={() => handleclick(item)}
-              />
+          {data.map((book) => (
+            <Grid key={book.id} item>
+              <Card book={book} handleClick={() => handleclick(book)} />
             </Grid>
           ))}
         </Grid>

@@ -7,7 +7,7 @@ const BasketPage = () => {
   return (
     <>
       <Menu title="Koszyk" />
-      <Container maxWidth="md"></Container>
+      <Container maxWidth="md">basket</Container>
     </>
   );
 };

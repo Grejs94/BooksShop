@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 
 import { useStyles } from "./styles";
 
-const Card = ({ picture, title, author, pages, handleClick }) => {
+const Card = ({ book: { cover_url, title, author, pages }, handleClick }) => {
   const classes = useStyles();
 
   return (
@@ -17,7 +17,7 @@ const Card = ({ picture, title, author, pages, handleClick }) => {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image={picture}
+          image={cover_url}
           title="Contemplative Reptile"
         />
         <CardContent>

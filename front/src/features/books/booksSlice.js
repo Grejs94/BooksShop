@@ -7,48 +7,38 @@ export const booksSlice = createSlice({
   initialState: {
     data: [],
     basket: [],
-    basketValue: 0,
+    // basketValue: 0,
     dataStatus: "iddle",
   },
   reducers: {
     fetchBooksDataStarted: (state) => {
       state.dataStatus = "inProgress";
     },
-    fetchBooksDataDataSucceeded: (state) => {
+    fetchBooksDataDataSucceeded: (state, action) => {
+      state.data = action.payload.data;
       state.dataStatus = "succeeded";
     },
     fetchBooksDataDataFailed: (state) => {
       state.dataStatus = "failed";
     },
-    setData: (state, action) => {
-      state.data = action.payload.data;
-    },
     addItemToBasket: (state, action) => {
-      const IsInBasket = state.basket.find(
-        (item) => item.id === action.payload.id
-      );
+      const { id } = action.payload;
+      const isInBasket = state.basket.find((item) => item.id === id);
 
-      if (IsInBasket) {
-        state.basket = [
-          ...state.basket.map((element) => {
-            if (element.id === action.payload.id) {
-              return {
-                ...element,
-                value: element.value + 1,
-              };
-            }
-            return element;
-          }),
-        ];
-      } else {
-        const item = { ...action.payload, value: 1 };
-        state.basket = [...state.basket, item];
-      }
+      const item = { ...action.payload, value: 1 };
 
-      state.basketValue = state.basket.reduce(
-        (acc, item) => acc + item.value,
-        0
-      );
+      isInBasket
+        ? (state.basket = [
+            ...state.basket.map((basketItem) =>
+              basketItem.id === id
+                ? {
+                    ...basketItem,
+                    value: basketItem.value + 1,
+                  }
+                : basketItem
+            ),
+          ])
+        : (state.basket = [...state.basket, item]);
     },
   },
 });
@@ -61,19 +51,20 @@ export const {
   setData,
 } = booksSlice.actions;
 
-export const fetchBooks = (pageNumber) => async (dispatch) => {
+export const fetchBooks = (pageNumber) => (dispatch) => {
   dispatch(fetchBooksDataStarted());
 
   try {
-    const data = await api.books.fetchBooks(pageNumber);
-    dispatch(setData(data));
-
-    dispatch(fetchBooksDataDataSucceeded());
+    api.books.fetchBooks(pageNumber, dispatch, fetchBooksDataDataSucceeded);
   } catch (error) {
     dispatch(fetchBooksDataDataFailed());
   }
 };
+export const selectBooksData = (state) => state.books.data;
+export const selectBooksBasket = (state) => state.books.basket;
+export const selectBooksBasketValue = (state) =>
+  state.books.basket.reduce((acc, item) => acc + item.value, 0);
 
-export const selectBooks = (state) => state.books;
+export const selectBooksFetchStatus = (state) => state.books.dataStatus;
 
 export default booksSlice.reducer;

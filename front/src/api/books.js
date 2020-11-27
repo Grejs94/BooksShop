@@ -1,8 +1,11 @@
+import axios from "axios";
+
 import { config } from "../config";
 
 export const books = {
-  fetchBooks: async (pageNumber) => {
-    const res = await fetch(`${config.url}/book?page=${pageNumber}`);
-    return await res.json();
+  fetchBooks: (pageNumber, dispatch, fetchBooksDataDataSucceeded) => {
+    axios.get(`${config.url}${pageNumber}`).then((response) => {
+      dispatch(fetchBooksDataDataSucceeded(response.data));
+    });
   },
 };
